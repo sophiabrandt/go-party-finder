@@ -2,3 +2,5 @@ github.com/ardanlabs/conf v1.3.3 h1:f6LqtujAf+WT9MnKfeNWpVuugEr9Nf/1xii/1+qF374=
 github.com/ardanlabs/conf v1.3.3/go.mod h1:ILsMo9dMqYzCxDjDXTiwMI0IgxOJd0MOiucbQY2wlJw=
 github.com/google/go-cmp v0.3.1 h1:Xye71clBPdm5HgqGwUkwhbynsUJZhDbS20FvLhQ2izg=
 github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
+github.com/majidsajadi/sariaf v0.0.0-20201212122241-2c10d208313a h1:8OVGFTdoSk2YXrHSrMUDzGRnwOmQExT/KyuHOFG7mKI=
+github.com/majidsajadi/sariaf v0.0.0-20201212122241-2c10d208313a/go.mod h1:iFjcl7O85vGF6Ni0ASr5g9vysjk4KqIwdJacZj5tlDA=

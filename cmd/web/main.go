@@ -8,9 +8,12 @@ import (
 	"time"
 
 	"github.com/ardanlabs/conf"
+	"github.com/sophiabrandt/go-party-finder/internal/router"
 )
 
 func main() {
+	log := log.New(os.Stdout, "PARTYFINDER : ", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
+
 	// =========================================================================
 	// Configuration
 
@@ -59,12 +62,9 @@ func main() {
 
 	log.Println("main: Initializing server")
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", Greet)
-
 	s := http.Server{
 		Addr:         cfg.Web.Addr,
-		Handler:      mux,
+		Handler:      router.New(log),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 		IdleTimeout:  cfg.Web.IdleTimeout,
@@ -73,8 +73,4 @@ func main() {
 	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatal("Server startup failed")
 	}
-}
-
-func Greet(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World!")
 }
