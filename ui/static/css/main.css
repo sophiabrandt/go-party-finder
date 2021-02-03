@@ -1,0 +1,142 @@
+:root {
+  --ratio: 1.5;
+  --s-2: calc(var(--s-1) / var(--ratio));
+  --s-1: calc(var(--s0) / var(--ratio));
+  --s0: 1rem;
+  --measure: 60ch;
+  --color-light: #ecf0f1;
+  --color-dark: #1D3557;
+  --color-secondary:#F1FAEE;
+  --color-danger: #e74c3c;
+  --color-error: #c0392b;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-dark: #ecf0f1;
+    --color-light: #1D3557;
+    --color-secondary:#235658;
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.header__content {
+  flex: 1 0 auto;
+}
+
+.nav__content {
+  flex: 1 0 auto;
+}
+
+.main__content {
+  flex: 10 0 auto;
+}
+
+.wrapper {
+  max-width: 70rem;
+  padding: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+.center {
+  box-sizing: content-box;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80vw;
+  text-align: center;
+}
+
+.stack {
+  --space: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.stack > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.stack > * + * {
+  margin-top: var(--space);
+}
+
+.box {
+  padding: var(--s0);
+  color: var(--color-dark);
+  background-color: var(--color-light);
+}
+
+.box * {
+  color: inherit;
+}
+
+.cluster {
+  --space: 1rem;
+  overflow: hidden;
+}
+
+.cluster > * {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  margin: calc(var(--space) / 2 * -1);
+}
+
+.cluster > * > * {
+  margin: calc(var(--space) / 2);
+}
+
+.form {
+  min-width: 80%;
+}
+
+.form label > span {
+  font-weight: bold;
+}
+
+.form-background {
+  background: var(--color-light);
+  padding: 1rem;
+  color: var(--color-dark);
+  border-radius: 5px;
+}
+
+textarea {
+  max-width: 95%;
+}
+
+.inline-label {
+  display: inline-block;
+}
+
+.danger {
+  color: var(--color-danger);
+  font-weight: bold;
+  text-transform: uppercase;
+  display: block;
+}
+
+.error {
+  color: var(--color-error);
+  font-weight: bold;
+  display: block;
+}
+
+.footer {
+  flex-shrink: 0;
+  background-color: var(--color-secondary);
+  text-align: center;
+}

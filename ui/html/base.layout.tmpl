@@ -1,0 +1,27 @@
+{{define "base"}}
+<!doctype html>
+<html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <title>{{template "title" .}} - Party Finder</title>
+        <link rel='shortcut icon' href='/static/img/favicon.ico' type='image/x-icon'>
+        <link rel='stylesheet' href='/static/css/reset.min.css'>
+        <link rel='stylesheet' href='/static/css/basic.css'>
+        <link rel='stylesheet' href='/static/css/main.css'>
+    </head>
+        <body>
+          <header class="center header__content">
+            <h1><a href="/">Party Finder</a></h1>
+            <img class="center"src="/static/img/location-map-finding-lost.svg" alt="location map" width="50rem" height="50rem" alt="conversation">
+          </header>
+          <nav class="wrapper cluster nav__content">
+            <div>
+              <a href="/">Home</a>
+              <a href="/party/create">New Party</a>
+            </div>
+          </nav>
+          <main class="wrapper stack main__content">{{template "main" .}}</main>
+        </body>
+    {{template "footer" .}}
+</html>
+{{end}}
