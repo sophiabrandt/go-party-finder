@@ -1,16 +1,19 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/ardanlabs/conf"
 	"github.com/pkg/errors"
 	"github.com/sophiabrandt/go-party-finder/internal/config"
-	"github.com/sophiabrandt/go-party-finder/internal/render"
-	"github.com/sophiabrandt/go-party-finder/internal/router"
+	"github.com/sophiabrandt/go-party-finder/internal/handlers"
+	"github.com/sophiabrandt/go-party-finder/internal/web"
 )
 
 // build is the git version of this program. It is set using build flags in the makefile.
@@ -69,28 +72,61 @@ func run(log *log.Logger) error {
 	// =========================================================================
 	// Create TemplateCache
 
-	tc, err := render.CreateTemplateCache()
+	tc, err := web.CreateTemplateCache()
 	if err != nil {
 		return errors.Wrap(err, "cannot create template cache")
 	}
 	cfg.App.TemplateCache = tc
-	render.NewTemplates(&cfg)
+	web.NewTemplates(&cfg)
 
 	// =========================================================================
 	// Start Server
 
 	log.Println("main: Initializing server")
 
+	// Make a channel to listen for an interrupt or terminate signal from the OS.
+	// Use a buffered channel because the signal package requires it.
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+
 	s := http.Server{
 		Addr:         cfg.Web.Addr,
-		Handler:      router.New(log),
+		Handler:      handlers.Router(build, shutdown, log),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 		IdleTimeout:  cfg.Web.IdleTimeout,
 	}
 
-	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatal("Server startup failed")
+	// Make a channel to listen for errors coming from the listener. Use a
+	// buffered channel so the goroutine can exit if we don't collect this error.
+	serverErrors := make(chan error, 1)
+
+	// Start the service listening for requests.
+	go func() {
+		log.Printf("main: API listening on %s", s.Addr)
+		serverErrors <- s.ListenAndServe()
+	}()
+
+	// =========================================================================
+	// Shutdown
+
+	// Blocking main and waiting for shutdown.
+	select {
+	case err := <-serverErrors:
+		return errors.Wrap(err, "server error")
+
+	case sig := <-shutdown:
+		log.Printf("main: %v : Start shutdown", sig)
+
+		// Give outstanding requests a deadline for completion.
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)
+		defer cancel()
+
+		// Asking listener to shutdown and shed load.
+		if err := s.Shutdown(ctx); err != nil {
+			s.Close()
+			return errors.Wrap(err, "could not stop server gracefully")
+		}
 	}
 
 	return nil

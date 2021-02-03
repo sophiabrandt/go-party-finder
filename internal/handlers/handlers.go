@@ -1,12 +1,23 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
+	"os"
 
-	"github.com/sophiabrandt/go-party-finder/internal/models"
-	"github.com/sophiabrandt/go-party-finder/internal/render"
+	"github.com/sophiabrandt/go-party-finder/internal/mid"
+	"github.com/sophiabrandt/go-party-finder/internal/web"
 )
 
-func Home(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, r, "home.page.tmpl", &models.TemplateData{})
+// Router  creates a new http.Handler with all routes.
+func Router(build string, shutdown chan os.Signal, log *log.Logger) http.Handler {
+	app := web.NewApp(shutdown, mid.Logger(log), mid.Errors(log), mid.Metrics(), mid.Panics(log))
+
+	app.Handle(http.MethodGet, "/", Home)
+
+	// static file server
+	filesDir := http.Dir("./ui/static")
+	app.FileServer("/static", filesDir)
+
+	return app
 }
