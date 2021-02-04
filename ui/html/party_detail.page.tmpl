@@ -1,0 +1,27 @@
+{{template "base" .}}
+
+{{define "title"}}Party #{{.Party.ID}}{{end}}
+
+{{define "main"}}
+    <div class="center">
+        <div class="grid stack">
+        {{with .Party}}
+          <div class="box stack">
+            <h3>{{.Name}}</h3>
+            <p>{{.Location}}</p>
+            <p>{{.Description}}</p>
+          </div>
+          <div class="cluster center">
+            <div>
+              <button>Apply 👍</button>
+              <button><a href="/parties/{{.ID}}/update">Update 🖉</a></button>
+              <button>Bookmark 🔖</button>
+            </div>
+              <form action="/parties/{{.ID}}/delete" method="POST">
+                  <span class="danger">Danger Zone:</span><button type="submit">Delete Party ⚠️</button>
+              </form>
+          </div>
+        {{end}}
+        </div>
+    </div>
+{{end}}

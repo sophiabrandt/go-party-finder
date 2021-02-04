@@ -5,7 +5,7 @@ import (
 )
 
 type TemplateData struct {
-	Party       *party.Party
+	Party       *party.Info
 	Parties     []*party.Info
 	CurrentYear int
 }

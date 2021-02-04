@@ -11,6 +11,7 @@
   --color-secondary: #a8dadc;
   --color-contrast: #E63946;
   --color-error: #c0392b;
+  --color-danger: #F44336;
 }
 
 a {
@@ -21,6 +22,16 @@ a {
 a:hover {
   color: var(--color-contrast);
   text-decoration: underline;
+}
+
+button > a {
+  color: var(--color-dark);
+  text-decoration: none;
+}
+
+button > a:hover {
+  color: var(--color-dark);
+  text-decoration: none;
 }
 
 html,
@@ -87,6 +98,10 @@ body {
   color: inherit;
 }
 
+.box > h3 {
+  color: var(--color-contrast);
+}
+
 .cluster {
   --space: 1rem;
   overflow: hidden;
@@ -128,6 +143,13 @@ textarea {
 }
 
 .error {
+  color: var(--color-error);
+  font-weight: bold;
+  text-transform: uppercase;
+  display: block;
+}
+
+.danger {
   color: var(--color-danger);
   font-weight: bold;
   text-transform: uppercase;
@@ -138,6 +160,14 @@ textarea {
   flex-shrink: 0;
   background-color: var(--color-secondary);
   text-align: center;
+}
+
+footer > *  {
+  margin: 0.3rem;
+}
+
+footer:last-child {
+  padding-bottom: 0.5rem;
 }
 
 .mt {

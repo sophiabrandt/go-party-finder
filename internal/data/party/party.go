@@ -3,8 +3,10 @@ package party
 
 import (
 	"context"
+	"database/sql"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/sophiabrandt/go-party-finder/internal/database"
@@ -57,4 +59,36 @@ func (p Party) Query(ctx context.Context, traceID string, pageNumber int, rowsPe
 	}
 
 	return parties, nil
+}
+
+// QueryByID finds the party identified by a given ID.
+func (p Party) QueryByID(ctx context.Context, traceID string, partyID string) (*Info, error) {
+
+	// intialize pointer to a zeroed Info struct
+	prty := &Info{}
+
+	if _, err := uuid.Parse(partyID); err != nil {
+		return prty, ErrInvalidID
+	}
+
+	const q = `
+	SELECT
+		party_id, name, location, description, lf_players, lf_gm
+	FROM
+		parties AS p
+	WHERE
+		p.party_id = $1`
+
+	p.log.Printf("%s: %s: %s", traceID, "party.QueryByID",
+		database.Log(q, partyID),
+	)
+
+	if err := p.db.GetContext(ctx, prty, q, partyID); err != nil {
+		if err == sql.ErrNoRows {
+			return prty, ErrNotFound
+		}
+		return prty, errors.Wrap(err, "selecting single product")
+	}
+
+	return prty, nil
 }

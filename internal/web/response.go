@@ -46,6 +46,11 @@ func addDefaultData(dt *td.TemplateData) *td.TemplateData {
 
 // Respond renders templates using html/template.
 func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data interface{}, statusCode int) error {
+	// add secure headers
+	w.Header().Set("X-XSS-Protection", "1; mode=block")
+	w.Header().Set("X-Frame-Options", "deny")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+
 	// Set the status code for the request logger middleware.
 	// If the context is missing this value, request the service
 	// to be shutdown gracefully.
@@ -55,15 +60,8 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 	}
 	v.StatusCode = statusCode
 
-	// check for ErrorResponse first to avoid superfluous calls
-	if err, ok := data.(ErrorResponse); ok {
-		http.Error(w, err.Error, http.StatusInternalServerError)
-		return nil
-	}
-
-	// write to buffer with HTML tempplate
-	if td, ok := data.(*td.TemplateData); ok {
-
+	switch d := data.(type) {
+	case *td.TemplateData:
 		// setup template Cache
 		var tc map[string]*template.Template
 
@@ -81,38 +79,31 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 			return NewShutdownError("can't get template from cache")
 		}
 
-		// add secure headers
-		w.Header().Set("X-XSS-Protection", "1; mode=block")
-		w.Header().Set("X-Frame-Options", "deny")
-		w.Header().Set("X-Content-Type-Options", "nosniff")
+		buf := new(bytes.Buffer)
+
+		err := t.Execute(buf, addDefaultData(d))
+		if err != nil {
+			return errors.Wrap(err, "cannot parse template")
+		}
 
 		// Write the status code to the response.
 		w.WriteHeader(statusCode)
 
-		buf := new(bytes.Buffer)
-
-		err := t.Execute(buf, addDefaultData(td))
-		if err != nil {
-			return errors.Wrap(err, "cannot parse template")
-		}
 		_, err = buf.WriteTo(w)
 		if err != nil {
 			return errors.Wrap(err, "Error writing template to browser")
 		}
 
-	} else {
+	case ErrorResponse:
+		http.Error(w, d.Error, http.StatusInternalServerError)
+		return nil
+
+	default:
 		// If input data is not template data, try marshalling to json
 		jsonData, err := json.Marshal(data)
 		if err != nil {
 			return err
 		}
-
-		// Set the content type and headers once we know marshaling has succeeded.
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("X-XSS-Protection", "1; mode=block")
-		w.Header().Set("X-Content-Type-Options", "nosniff")
-		w.Header().Set("X-Frame-Options", "deny")
-
 		// Write the status code to the response.
 		w.WriteHeader(statusCode)
 
