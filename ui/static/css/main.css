@@ -1,21 +1,26 @@
 :root {
+  font-family: "Roboto Mono", sans-serif;
   --ratio: 1.5;
   --s-2: calc(var(--s-1) / var(--ratio));
   --s-1: calc(var(--s0) / var(--ratio));
   --s0: 1rem;
   --measure: 60ch;
-  --color-light: #ecf0f1;
-  --color-dark: #1D3557;
-  --color-secondary:#F1FAEE;
-  --color-danger: #e74c3c;
+  --color-links: #457b9d;
+  --color-dark: #1d3557;
+  --color-light: #F1FAEE;
+  --color-secondary: #a8dadc;
+  --color-contrast: #E63946;
   --color-error: #c0392b;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-dark: #ecf0f1;
-    --color-light: #1D3557;
-    --color-secondary:#235658;
-  }
+
+a {
+  color: var(--color-links);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-contrast);
+  text-decoration: underline;
 }
 
 html,
@@ -122,16 +127,10 @@ textarea {
   display: inline-block;
 }
 
-.danger {
+.error {
   color: var(--color-danger);
   font-weight: bold;
   text-transform: uppercase;
-  display: block;
-}
-
-.error {
-  color: var(--color-error);
-  font-weight: bold;
   display: block;
 }
 
@@ -139,4 +138,8 @@ textarea {
   flex-shrink: 0;
   background-color: var(--color-secondary);
   text-align: center;
+}
+
+.mt {
+  margin-top: 1rem;
 }
