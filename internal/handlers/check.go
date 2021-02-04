@@ -3,12 +3,17 @@ package handlers
 import (
 	"context"
 	"net/http"
+	"os"
 
+	"github.com/sophiabrandt/go-party-finder/internal/database"
 	"github.com/sophiabrandt/go-party-finder/internal/web"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type checkGroup struct {
 	build string
+	db    *sqlx.DB
 }
 
 // readiness checks if the database is ready and if not will return a 500 status.
@@ -18,6 +23,11 @@ func (cg checkGroup) readiness(ctx context.Context, w http.ResponseWriter, r *ht
 	status := "ok"
 	statusCode := http.StatusOK
 
+	if err := database.StatusCheck(ctx, cg.db); err != nil {
+		status = "db not ready"
+		statusCode = http.StatusInternalServerError
+	}
+
 	health := struct {
 		Status string `json:"status"`
 	}{
@@ -25,4 +35,24 @@ func (cg checkGroup) readiness(ctx context.Context, w http.ResponseWriter, r *ht
 	}
 
 	return web.Respond(ctx, w, "", health, statusCode)
+}
+
+// liveness returns simple status info if the service is alive.
+func (cg checkGroup) liveness(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	host, err := os.Hostname()
+	if err != nil {
+		host = "unavailable"
+	}
+
+	info := struct {
+		Status string `json:"status,omitempty"`
+		Build  string `json:"build,omitempty"`
+		Host   string `json:"host,omitempty"`
+	}{
+		Status: "up",
+		Build:  cg.build,
+		Host:   host,
+	}
+
+	return web.Respond(ctx, w, "", info, http.StatusOK)
 }

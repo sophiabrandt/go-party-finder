@@ -87,16 +87,22 @@ docker-compose up -d
 
 ## Usage
 
-1. Run database with Docker:
+1. Run database with Docker/docker-compose:
 
     ```sh
-    docker-compose up
+    make up
     ```
 
-2. Start application locally:
+2. Run migrations and seed:
 
     ```sh
-    go run ./cmd/web
+    make seed
+    ```
+
+3. Start application locally:
+
+    ```sh
+    make dev
     ```
 
 

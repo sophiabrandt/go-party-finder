@@ -1,6 +1,23 @@
 version: '2.4'
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    ports:
+      - 8000:8000
+      - 6060:6060
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "0.0.0.0:6060/debug/liveness"]
+      interval: 3s
+      start_period: 10s
+      timeout: 4s
+      retries: 10
+
   db:
     build:
       context: ./docker/database
@@ -14,7 +31,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data:delegated
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 8461"]
       interval: 10s
       start_period: 10s
       timeout: 4s

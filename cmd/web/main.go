@@ -13,6 +13,7 @@ import (
 	"github.com/ardanlabs/conf"
 	"github.com/pkg/errors"
 	"github.com/sophiabrandt/go-party-finder/internal/config"
+	"github.com/sophiabrandt/go-party-finder/internal/database"
 	"github.com/sophiabrandt/go-party-finder/internal/handlers"
 	"github.com/sophiabrandt/go-party-finder/internal/web"
 )
@@ -57,6 +58,27 @@ func run(log *log.Logger) error {
 		}
 		return errors.Wrap(err, "parsing config")
 	}
+
+	// =========================================================================
+	// Start Database
+
+	log.Println("main: Initializing database support")
+
+	db, err := database.Open(database.Config{
+		User:       cfg.DB.User,
+		Password:   cfg.DB.Password,
+		Host:       cfg.DB.Host,
+		Name:       cfg.DB.Name,
+		DisableTLS: cfg.DB.DisableTLS,
+	})
+	if err != nil {
+		return errors.Wrap(err, "connecting to db")
+	}
+
+	defer func() {
+		log.Printf("main: Database Stopping : %s", cfg.DB.Host)
+		db.Close()
+	}()
 
 	// =========================================================================
 	// Start Debug Service
@@ -113,7 +135,7 @@ func run(log *log.Logger) error {
 
 	s := http.Server{
 		Addr:         cfg.Web.Addr,
-		Handler:      handlers.Router(build, shutdown, staticFilesDir, log),
+		Handler:      handlers.Router(build, shutdown, staticFilesDir, log, db),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 		IdleTimeout:  cfg.Web.IdleTimeout,

@@ -18,6 +18,13 @@ type Conf struct {
 		ShutdownTimeout time.Duration `conf:"default:5s"`
 		IdleTimeout     time.Duration `conf:"default:120s"`
 	}
+	DB struct {
+		User       string `conf:"default:postgres"`
+		Password   string `conf:"default:postgres,noprint"`
+		Host       string `conf:"default:0.0.0.0:8461"`
+		Name       string `conf:"default:postgres"`
+		DisableTLS bool   `conf:"default:true"`
+	}
 	App struct {
 		UseCache            bool   `conf:"default:false"`
 		StaticFilesLocation string `conf:"default:./ui/static"`

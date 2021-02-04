@@ -12,7 +12,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/sophiabrandt/go-party-finder/internal/config"
-	"github.com/sophiabrandt/go-party-finder/internal/models"
+	td "github.com/sophiabrandt/go-party-finder/internal/data"
 )
 
 var (
@@ -38,7 +38,7 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 	v.StatusCode = statusCode
 
 	// write to buffer with HTML tempplate
-	if td, ok := data.(*models.TemplateData); ok {
+	if td, ok := data.(*td.TemplateData); ok {
 
 		// setup template Cache
 		var tc map[string]*template.Template

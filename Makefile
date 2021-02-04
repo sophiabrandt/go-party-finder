@@ -29,6 +29,15 @@ deps-cleancache:
 	go clean -modcache
 
 # ==============================================================================
+# Administration
+
+migrate:
+	go run ./cmd/admin migrate
+
+seed: migrate
+	go run ./cmd/admin seed
+
+# ==============================================================================
 # Running tests within the local computer
 
 test:
