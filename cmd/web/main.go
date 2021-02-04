@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"expvar"
 	"fmt"
 	"log"
 	"net/http"
@@ -58,8 +59,26 @@ func run(log *log.Logger) error {
 	}
 
 	// =========================================================================
+	// Start Debug Service
+	//
+	// /debug/pprof - Added to the default mux by importing the net/http/pprof package.
+	// /debug/vars - Added to the default mux by importing the expvar package.
+	//
+	// Not concerned with shutting this down when the application is shutdown.
+
+	log.Println("main: Initializing debugging support")
+
+	go func() {
+		log.Printf("main: Debug Listening %s", cfg.Web.DebugAddr)
+		if err := http.ListenAndServe(cfg.Web.DebugAddr, http.DefaultServeMux); err != nil {
+			log.Printf("main: Debug Listener closed : %v", err)
+		}
+	}()
+
+	// =========================================================================
 	// App Starting
 
+	expvar.NewString("build").Set(build)
 	log.Printf("main : Started : Application initializing : version %q", build)
 	defer log.Println("main: Completed")
 
@@ -72,12 +91,12 @@ func run(log *log.Logger) error {
 	// =========================================================================
 	// Create TemplateCache
 
+	web.NewTemplates(&cfg)
 	tc, err := web.CreateTemplateCache()
 	if err != nil {
 		return errors.Wrap(err, "cannot create template cache")
 	}
 	cfg.App.TemplateCache = tc
-	web.NewTemplates(&cfg)
 
 	// =========================================================================
 	// Start Server
@@ -89,9 +108,12 @@ func run(log *log.Logger) error {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
 
+	// pass location of static files to router
+	staticFilesDir := cfg.App.StaticFilesLocation
+
 	s := http.Server{
 		Addr:         cfg.Web.Addr,
-		Handler:      handlers.Router(build, shutdown, log),
+		Handler:      handlers.Router(build, shutdown, staticFilesDir, log),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 		IdleTimeout:  cfg.Web.IdleTimeout,

@@ -3,6 +3,7 @@ package web
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -14,12 +15,10 @@ import (
 	"github.com/sophiabrandt/go-party-finder/internal/models"
 )
 
-// functions holds all functions that are available in the templates.
-var functions = template.FuncMap{}
-
 var (
-	conf            *config.Conf
-	pathToTemplates = "./ui/html"
+	// functions holds all functions that are available in the templates.
+	functions = template.FuncMap{}
+	conf      *config.Conf
 )
 
 // NewTemplates sets the config for the template package.
@@ -38,6 +37,7 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 	}
 	v.StatusCode = statusCode
 
+	// write to buffer with HTML tempplate
 	if td, ok := data.(*models.TemplateData); ok {
 
 		// setup template Cache
@@ -57,6 +57,11 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 			return errors.New("can't get template from cache")
 		}
 
+		// add secure headers
+		w.Header().Set("X-XSS-Protection", "1; mode=block")
+		w.Header().Set("X-Frame-Options", "deny")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+
 		// Write the status code to the response.
 		w.WriteHeader(statusCode)
 
@@ -69,6 +74,27 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 		_, err = buf.WriteTo(w)
 		if err != nil {
 			fmt.Println("Error writing template to browser", err)
+			return err
+		}
+
+	} else {
+		// If input data is not template data, try marshalling to json
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			return err
+		}
+
+		// Set the content type and headers once we know marshaling has succeeded.
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("X-XSS-Protection", "1; mode=block")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "deny")
+
+		// Write the status code to the response.
+		w.WriteHeader(statusCode)
+
+		// Send the result back to the client.
+		if _, err := w.Write(jsonData); err != nil {
 			return err
 		}
 	}
@@ -85,7 +111,7 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 func CreateTemplateCache() (map[string]*template.Template, error) {
 	cache := map[string]*template.Template{}
 
-	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", pathToTemplates))
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", conf.App.TemplateLocation))
 	if err != nil {
 		return cache, err
 	}
@@ -98,12 +124,12 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 			return cache, err
 		}
 
-		ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
+		ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", conf.App.TemplateLocation))
 		if err != nil {
 			return cache, err
 		}
 
-		ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.partial.tmpl", pathToTemplates))
+		ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.partial.tmpl", conf.App.TemplateLocation))
 		if err != nil {
 			return cache, err
 		}
@@ -123,7 +149,7 @@ func RespondError(ctx context.Context, w http.ResponseWriter, err error) error {
 			Error:  webErr.Err.Error(),
 			Fields: webErr.Fields,
 		}
-		if err := Respond(ctx, w, "home.page.tmpl", er, webErr.Status); err != nil {
+		if err := Respond(ctx, w, "", er, webErr.Status); err != nil {
 			return err
 		}
 		return nil
@@ -133,7 +159,7 @@ func RespondError(ctx context.Context, w http.ResponseWriter, err error) error {
 	er := ErrorResponse{
 		Error: http.StatusText(http.StatusInternalServerError),
 	}
-	if err := Respond(ctx, w, "home.page.tmpl", er, http.StatusInternalServerError); err != nil {
+	if err := Respond(ctx, w, "", er, http.StatusInternalServerError); err != nil {
 		return err
 	}
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -130,9 +131,38 @@ func (a *App) handle(debug bool, method string, path string, handler Handler, mw
 	a.mux.MethodFunc(method, path, h)
 }
 
+// neuteredFileSystem disallows directory listings for a static file server.
+type NeuteredFileSystem struct {
+	Fs http.FileSystem
+}
+
+// Open creates access to the neutered file system.
+// https://www.alexedwards.net/blog/disable-http-fileserver-directory-listings
+func (nfs NeuteredFileSystem) Open(path string) (http.File, error) {
+	f, err := nfs.Fs.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	s, err := f.Stat()
+	if s.IsDir() {
+		index := filepath.Join(path, "index.html")
+		if _, err := nfs.Fs.Open(index); err != nil {
+			closeErr := f.Close()
+			if closeErr != nil {
+				return nil, closeErr
+			}
+
+			return nil, err
+		}
+	}
+
+	return f, nil
+}
+
 // FileServer conveniently sets up a http.FileServer handler to serve
 // static files from a http.FileSystem.
-func (a *App) FileServer(path string, root http.FileSystem) {
+func (a *App) FileServer(path string, root NeuteredFileSystem) {
 	if strings.ContainsAny(path, "{}*") {
 		panic("FileServer does not permit any URL parameters.")
 	}

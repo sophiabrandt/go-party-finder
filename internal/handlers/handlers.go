@@ -10,14 +10,22 @@ import (
 )
 
 // Router  creates a new http.Handler with all routes.
-func Router(build string, shutdown chan os.Signal, log *log.Logger) http.Handler {
+func Router(build string, shutdown chan os.Signal, staticFilesDir string, log *log.Logger) http.Handler {
+	// Creates a new web application with all routes and middleware.
 	app := web.NewApp(shutdown, mid.Logger(log), mid.Errors(log), mid.Metrics(), mid.Panics(log))
 
+	// Register debug check endpoints.
+	cg := checkGroup{
+		build: build,
+	}
+	app.HandleDebug(http.MethodGet, "/readiness", cg.readiness)
+
+	// index route
 	app.Handle(http.MethodGet, "/", Home)
 
 	// static file server
-	filesDir := http.Dir("./ui/static")
-	app.FileServer("/static", filesDir)
+	filesDir := http.Dir(staticFilesDir)
+	app.FileServer("/static", web.NeuteredFileSystem{filesDir})
 
 	return app
 }
