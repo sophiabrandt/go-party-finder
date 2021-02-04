@@ -89,21 +89,21 @@ docker-compose up -d
 
 1. Run database with Docker/docker-compose:
 
-    ```sh
-    make up
-    ```
+```sh
+make up
+```
 
 2. Run migrations and seed:
 
-    ```sh
-    make seed
-    ```
+```sh
+make seed
+```
 
 3. Start application locally:
 
-    ```sh
-    make dev
-    ```
+```sh
+make dev
+```
 
 
 Navigate to [https://localhost:8000](https://localhost:8000).

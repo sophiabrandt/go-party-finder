@@ -3,10 +3,16 @@
 {{define "title"}}Home{{end}}
 
 {{define "main"}}
-    <h2 class="center">All Available Parties</h2>
+    <h2 class="center">Latest Parties</h2>
+    {{if .Parties}}
     <div class="center">
         <div class="grid stack">
+          {{range .Parties}}
+            {{template "party" .}}
+          {{end}}
         </div>
     </div>
-      <p>Sorry, there are currently no available parties!</p>
+    {{else}}
+      <p>Sorry, there are currently no meets!</p>
+    {{end}}
 {{end}}

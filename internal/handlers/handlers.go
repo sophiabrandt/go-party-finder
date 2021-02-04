@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/sophiabrandt/go-party-finder/internal/data/party"
 	"github.com/sophiabrandt/go-party-finder/internal/mid"
 	"github.com/sophiabrandt/go-party-finder/internal/web"
 )
@@ -23,8 +24,12 @@ func Router(build string, shutdown chan os.Signal, staticFilesDir string, log *l
 	app.HandleDebug(http.MethodGet, "/readiness", cg.readiness)
 	app.HandleDebug(http.MethodGet, "/liveness", cg.liveness)
 
-	// index route
-	app.Handle(http.MethodGet, "/", Home)
+	// index route and parties routes
+	pg := partyGroup{
+		party: party.New(log, db),
+	}
+	app.Handle(http.MethodGet, "/", pg.query)
+	app.Handle(http.MethodGet, "/parties/{page}/{rows}", pg.query)
 
 	// static file server
 	filesDir := http.Dir(staticFilesDir)

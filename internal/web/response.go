@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"path/filepath"
 
@@ -37,6 +36,12 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 	}
 	v.StatusCode = statusCode
 
+	// check for ErrorResponse first to avoid superfluous calls
+	if err, ok := data.(ErrorResponse); ok {
+		http.Error(w, err.Error, http.StatusInternalServerError)
+		return nil
+	}
+
 	// write to buffer with HTML tempplate
 	if td, ok := data.(*td.TemplateData); ok {
 
@@ -54,7 +59,7 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 
 		t, ok := tc[tmpl]
 		if !ok {
-			return errors.New("can't get template from cache")
+			return NewShutdownError("can't get template from cache")
 		}
 
 		// add secure headers
@@ -69,12 +74,11 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 
 		err := t.Execute(buf, td)
 		if err != nil {
-			log.Fatal(err)
+			return errors.Wrap(err, "cannot parse template")
 		}
 		_, err = buf.WriteTo(w)
 		if err != nil {
-			fmt.Println("Error writing template to browser", err)
-			return err
+			return errors.Wrap(err, "Error writing template to browser")
 		}
 
 	} else {
@@ -97,11 +101,6 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 		if _, err := w.Write(jsonData); err != nil {
 			return err
 		}
-	}
-
-	if err, ok := data.(ErrorResponse); ok {
-		http.Error(w, err.Error, http.StatusInternalServerError)
-		return nil
 	}
 
 	return nil
