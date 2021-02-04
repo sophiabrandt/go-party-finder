@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/sophiabrandt/go-party-finder/internal/config"
@@ -15,14 +16,32 @@ import (
 )
 
 var (
+	conf *config.Conf
+
 	// functions holds all functions that are available in the templates.
-	functions = template.FuncMap{}
-	conf      *config.Conf
+	functions = template.FuncMap{
+		"humanDate": HumanDate,
+	}
 )
 
 // NewTemplates sets the config for the template package.
 func NewTemplates(c *config.Conf) {
 	conf = c
+}
+
+// HumanDate returns time in YYYY-MM-DD format
+func HumanDate(t time.Time) string {
+	return t.Format("2006-01-02")
+}
+
+// addDefaultData adds data for all templates
+func addDefaultData(dt *td.TemplateData) *td.TemplateData {
+	if dt == nil {
+		dt = &td.TemplateData{}
+	}
+	dt.CurrentYear = time.Now().Year()
+
+	return dt
 }
 
 // Respond renders templates using html/template.
@@ -72,7 +91,7 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 
 		buf := new(bytes.Buffer)
 
-		err := t.Execute(buf, td)
+		err := t.Execute(buf, addDefaultData(td))
 		if err != nil {
 			return errors.Wrap(err, "cannot parse template")
 		}
