@@ -62,57 +62,72 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 
 	switch d := data.(type) {
 	case *td.TemplateData:
-		// setup template Cache
-		var tc map[string]*template.Template
-
-		if conf.App.UseCache {
-			// get the template cache from the app config
-			tc = conf.App.TemplateCache
-		} else {
-			// this is just used for testing, so that we rebuild
-			// the cache on every request
-			tc, _ = CreateTemplateCache()
-		}
-
-		t, ok := tc[tmpl]
-		if !ok {
-			return NewShutdownError("can't get template from cache")
-		}
-
-		buf := new(bytes.Buffer)
-
-		err := t.Execute(buf, addDefaultData(d))
-		if err != nil {
-			return errors.Wrap(err, "cannot parse template")
-		}
-
-		// Write the status code to the response.
-		w.WriteHeader(statusCode)
-
-		_, err = buf.WriteTo(w)
-		if err != nil {
-			return errors.Wrap(err, "Error writing template to browser")
-		}
-
+		return respondWithTemplate(ctx, w, tmpl, d, statusCode)
 	case ErrorResponse:
-		http.Error(w, d.Error, http.StatusInternalServerError)
-		return nil
-
+		return respondWithError(w, d, statusCode)
 	default:
-		// If input data is not template data, try marshalling to json
-		jsonData, err := json.Marshal(data)
-		if err != nil {
-			return err
-		}
-		// Write the status code to the response.
-		w.WriteHeader(statusCode)
-
-		// Send the result back to the client.
-		if _, err := w.Write(jsonData); err != nil {
-			return err
-		}
+		return respondWithJson(w, d, statusCode)
 	}
 
+	return nil
+}
+
+// respondWithTemplate assembles the HTML template and renders a response to the client.
+func respondWithTemplate(ctx context.Context, w http.ResponseWriter, tmpl string, data *td.TemplateData, statusCode int) error {
+	// setup template Cache
+	var tc map[string]*template.Template
+
+	if conf.App.UseCache {
+		// get the template cache from the app config
+		tc = conf.App.TemplateCache
+	} else {
+		// this is just used for testing, so that we rebuild
+		// the cache on every request
+		tc, _ = CreateTemplateCache()
+	}
+
+	t, ok := tc[tmpl]
+	if !ok {
+		return NewShutdownError("can't get template from cache")
+	}
+
+	buf := new(bytes.Buffer)
+
+	err := t.Execute(buf, addDefaultData(data))
+	if err != nil {
+		return errors.Wrap(err, "cannot parse template")
+	}
+
+	// Write the status code to the response.
+	w.WriteHeader(statusCode)
+
+	_, err = buf.WriteTo(w)
+	if err != nil {
+		return errors.Wrap(err, "Error writing template to browser")
+	}
+	return nil
+}
+
+// respondWithJson marshalls data into json and returns it to the client.
+func respondWithJson(w http.ResponseWriter, data interface{}, statusCode int) error {
+	// If input data is not template data, try marshalling to json
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	// Write the status code to the response.
+	w.WriteHeader(statusCode)
+
+	// Send the result back to the client.
+	if _, err := w.Write(jsonData); err != nil {
+		return err
+	}
+	return nil
+}
+
+// respondWithError renders an HTTP error to the client.
+func respondWithError(w http.ResponseWriter, data ErrorResponse, statusCode int) error {
+	http.Error(w, data.Error, http.StatusInternalServerError)
 	return nil
 }
 
