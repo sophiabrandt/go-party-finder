@@ -24,16 +24,6 @@ a:hover {
   text-decoration: underline;
 }
 
-button > a {
-  color: var(--color-dark);
-  text-decoration: none;
-}
-
-button > a:hover {
-  color: var(--color-dark);
-  text-decoration: none;
-}
-
 html,
 body {
   height: 100%;

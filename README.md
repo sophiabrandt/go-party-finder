@@ -154,7 +154,6 @@ Project Link: [https://github.com/sophiabrandt/go-party-finder](https://github.c
 ## Acknowledgements
 
 - [Let's Go!][letsgo] by Alex Edwards
-- [Basic.css](https://github.com/vladocar/Basic.css) by Vladimir Carrer
 - [Every Layout](https://every-layout.dev) by Heydon Pickering & Andy Bell
 - [ardanlabs/service][service] by ArdanLabs
 - [cloud native app](https://github.com/learning-cloud-native-go/myapp) by Dumindu Madunuwan
