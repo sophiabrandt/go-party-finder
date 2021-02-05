@@ -4,6 +4,7 @@
 
 {{define "main"}}
 <form class="center form" action="/parties/create" method="POST">
+  {{with .Form}}
   <div class="stack form-background">
     <div>
     {{template "party_form" .}}
@@ -12,5 +13,6 @@
       <button class="mt success" type="submit">Create New Party</button>
     </div>
   </div>
+  {{end}}
 </form>
 {{end}}

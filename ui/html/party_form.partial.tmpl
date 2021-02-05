@@ -2,48 +2,70 @@
     <div>
       <label>
         <span>Name:</span><br />
+        {{with .Errors.Get "name"}}
+          <label class="error">{{.}}</label>
+        {{end}}
         <input
           type="text"
           placeholder="Party name"
           name="name"
-          value="placeholder name"
+          value="{{.Get "name"}}"
         >
       </label>
     </div>
     <div>
       <label>
         <span>Location:</span><br />
+        {{with .Errors.Get "location"}}
+          <label class="error">{{.}}</label>
+        {{end}}
         <input
           type="text"
-          placeholder="location"
+          placeholder="Location"
           name="location"
-          value="placeholder location"
+          value="{{.Get "location"}}"
         >
       </label>
     </div>
     <div>
       <label>
         <span>Description:</span><br />
-        <textarea name="description" placeholder="Description" cols="50" rows="10">Description for the gaming group (party)</textarea>
+        {{with .Errors.Get "description"}}
+          <label class="error">{{.}}</label>
+        {{end}}
+        <textarea
+          name="description"
+          placeholder="Description"
+          cols="50"
+          rows="10"
+        >{{.Get "description"}}</textarea>
       </label>
     </div>
     <div>
       <label class="inline-label">
         <span>Looking for players:</span><br />
+        {{with .Errors.Get "lf_players"}}
+          <label class="error">{{.}}</label>
+        {{end}}
         <input
           type="number"
-          name="lf_p"
+          name="lf_players"
           min="0"
           max="10"
+          value="{{.Get "lf_players"}}"
         >
       </label>
       <label class="inline-label">
         <span>Looking for Game Masters:</span><br />
+        {{with .Errors.Get "lf_gm"}}
+          <label class="error">{{.}}</label>
+        {{end}}
         <input
           type="number"
           name="lf_gm"
           min="0"
           max="10"
+          value="{{.Get "lf_gm"}}"
         >
       </label>
 {{end}}

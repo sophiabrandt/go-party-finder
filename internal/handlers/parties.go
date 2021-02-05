@@ -3,13 +3,13 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/pkg/errors"
 	td "github.com/sophiabrandt/go-party-finder/internal/data"
 	"github.com/sophiabrandt/go-party-finder/internal/data/party"
+	"github.com/sophiabrandt/go-party-finder/internal/forms"
 	"github.com/sophiabrandt/go-party-finder/internal/web"
 )
 
@@ -44,8 +44,6 @@ func (pg partyGroup) query(ctx context.Context, w http.ResponseWriter, r *http.R
 		return web.NewRequestError(fmt.Errorf("invalid rows format: %s", rows), http.StatusBadRequest)
 	}
 
-	log.Println(pageNumber, rowsPerPage)
-
 	parties, err := pg.party.Query(ctx, v.TraceID, pageNumber, rowsPerPage)
 	if err != nil {
 		return err
@@ -79,5 +77,27 @@ func (pg partyGroup) queryByID(ctx context.Context, w http.ResponseWriter, r *ht
 
 // createForm shows the web form for creating a new party.
 func (pg partyGroup) createForm(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
-	return web.Respond(ctx, w, "create.page.tmpl", &td.TemplateData{}, http.StatusOK)
+	form := forms.New(nil)
+	return web.Respond(ctx, w, "create.page.tmpl", &td.TemplateData{Form: form}, http.StatusOK)
+}
+
+// create parses form data and creates a new party.
+func (pg partyGroup) create(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	v, ok := ctx.Value(web.KeyValues).(*web.Values)
+	if !ok {
+		return web.NewShutdownError("web value missing from context")
+	}
+
+	var np party.NewParty
+	if form, err := web.DecodeForm(r, &np); err != nil {
+		return web.Respond(ctx, w, "create.page.tmpl", &td.TemplateData{Form: form}, http.StatusUnprocessableEntity)
+	}
+
+	prty, err := pg.party.Create(ctx, v.TraceID, np, v.Now)
+	if err != nil {
+		return errors.Wrapf(err, "creating new party: %+v", np)
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/parties/%v", prty.ID), http.StatusSeeOther)
+	return nil
 }

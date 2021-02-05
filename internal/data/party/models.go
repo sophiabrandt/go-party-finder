@@ -18,9 +18,9 @@ type Info struct {
 
 // NewParty describes the required data for creating a new party.
 type NewParty struct {
-	Title       string
-	Description string
-	Location    string
-	LfPlayers   int
-	LfGM        int
+	Name        string `json:"name" validate:"required,max=255"`
+	Description string `json:"description" validate:"required,min=50,max=1000"`
+	Location    string `json:"location" validate:"required,max=255"`
+	LfPlayers   int    `json:"lf_players,string" validate:"required_without=LfGM,gte=0,lte=10"`
+	LfGM        int    `json:"lf_gm,string" validate:"required_without=LfPlayers,gte=0,lte=10"`
 }

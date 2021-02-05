@@ -32,6 +32,7 @@ func Router(build string, shutdown chan os.Signal, staticFilesDir string, log *l
 	app.Handle(http.MethodGet, "/parties/{page}/{rows}", pg.query)
 	app.Handle(http.MethodGet, "/parties/{id}", pg.queryByID)
 	app.Handle(http.MethodGet, "/parties/create", pg.createForm)
+	app.Handle(http.MethodPost, "/parties/create", pg.create)
 
 	// static file server
 	filesDir := http.Dir(staticFilesDir)

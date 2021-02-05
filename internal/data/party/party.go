@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -63,7 +64,6 @@ func (p Party) Query(ctx context.Context, traceID string, pageNumber int, rowsPe
 
 // QueryByID finds the party identified by a given ID.
 func (p Party) QueryByID(ctx context.Context, traceID string, partyID string) (*Info, error) {
-
 	// intialize pointer to a zeroed Info struct
 	prty := &Info{}
 
@@ -88,6 +88,37 @@ func (p Party) QueryByID(ctx context.Context, traceID string, partyID string) (*
 			return prty, ErrNotFound
 		}
 		return prty, errors.Wrap(err, "selecting single product")
+	}
+
+	return prty, nil
+}
+
+// Create adds a Party to the database. It returns the created Party with
+// fields like ID and DateCreated populated.
+func (p Party) Create(ctx context.Context, traceID string, np NewParty, now time.Time) (Info, error) {
+	prty := Info{
+		ID:          uuid.New().String(),
+		Name:        np.Name,
+		Location:    np.Location,
+		Description: np.Description,
+		LfPlayers:   np.LfPlayers,
+		LfGM:        np.LfGM,
+		DateCreated: now.UTC(),
+		DateUpdated: now.UTC(),
+	}
+
+	const q = `
+	INSERT INTO parties
+		(party_id, name, location, description, lf_players, lf_gm, date_created, date_updated)
+	VALUES
+		($1, $2, $3, $4, $5, $6, $7, $8)`
+
+	p.log.Printf("%s: %s: %s", traceID, "party.Create",
+		database.Log(q, prty.ID, prty.Name, prty.Location, prty.Description, prty.LfPlayers, prty.LfGM, prty.DateCreated, prty.DateUpdated),
+	)
+
+	if _, err := p.db.ExecContext(ctx, q, prty.ID, prty.Name, prty.Location, prty.Description, prty.LfPlayers, prty.LfGM, prty.DateCreated, prty.DateUpdated); err != nil {
+		return Info{}, errors.Wrap(err, "inserting prty")
 	}
 
 	return prty, nil

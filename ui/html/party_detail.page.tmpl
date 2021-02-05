@@ -10,6 +10,8 @@
             <h3>{{.Name}}</h3>
             <p>{{.Location}}</p>
             <p>{{.Description}}</p>
+            <p><strong>Open Slots for Players</strong>: {{.LfPlayers}}</p>
+            <p><strong>Open Slots for Game Masters</strong>: {{.LfGM}}</p>
           </div>
           <div class="cluster center">
             <div>
@@ -18,7 +20,7 @@
               <button>Bookmark 🔖</button>
             </div>
               <form action="/parties/{{.ID}}/delete" method="POST">
-                  <span class="danger">Danger Zone:</span><button type="submit">Delete Party ⚠️</button>
+                  <span class="danger">Danger Zone:</span><button class="danger--button" type="submit">Delete Party ⚠️</button>
               </form>
           </div>
         {{end}}
