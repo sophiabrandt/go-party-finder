@@ -1,0 +1,16 @@
+{{template "base" .}}
+
+{{define "title"}}Create a New Party{{end}}
+
+{{define "main"}}
+<form class="center form" action="/parties/create" method="POST">
+  <div class="stack form-background">
+    <div>
+    {{template "party_form" .}}
+    </div>
+    <div>
+      <button class="mt success" type="submit">Create New Party</button>
+    </div>
+  </div>
+</form>
+{{end}}

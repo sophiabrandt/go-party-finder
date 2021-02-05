@@ -54,7 +54,7 @@ func (pg partyGroup) query(ctx context.Context, w http.ResponseWriter, r *http.R
 	return web.Respond(ctx, w, "home.page.tmpl", &td.TemplateData{Parties: parties}, http.StatusOK)
 }
 
-
+// querybyID shows the details page for a given party.
 func (pg partyGroup) queryByID(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	v, ok := ctx.Value(web.KeyValues).(*web.Values)
 	if !ok {
@@ -75,4 +75,9 @@ func (pg partyGroup) queryByID(ctx context.Context, w http.ResponseWriter, r *ht
 	}
 
 	return web.Respond(ctx, w, "party_detail.page.tmpl", &td.TemplateData{Party: prty}, http.StatusOK)
+}
+
+// createForm shows the web form for creating a new party.
+func (pg partyGroup) createForm(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	return web.Respond(ctx, w, "create.page.tmpl", &td.TemplateData{}, http.StatusOK)
 }

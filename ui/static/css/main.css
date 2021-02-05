@@ -7,11 +7,12 @@
   --measure: 60ch;
   --color-links: #457b9d;
   --color-dark: #1d3557;
-  --color-light: #F1FAEE;
+  --color-light: #f1faee;
   --color-secondary: #a8dadc;
-  --color-contrast: #E63946;
+  --color-contrast: #e63946;
   --color-error: #c0392b;
-  --color-danger: #F44336;
+  --color-danger: #f44336;
+  --color-success: #8ad671;
 }
 
 a {
@@ -137,6 +138,19 @@ textarea {
   font-weight: bold;
   text-transform: uppercase;
   display: block;
+}
+
+button {
+  outline: none;
+  border: 1px solid var(--color-dark);
+  border-radius: 3px;
+  background-color: #efefef;
+  color: var(--color-dark);
+  padding: 0.3rem;
+}
+
+button.success {
+  background-color: var(--color-success);
 }
 
 .danger {
