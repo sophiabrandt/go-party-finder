@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ardanlabs/conf"
+	"github.com/golangcollege/sessions"
 )
 
 // Conf holds all the app configuration.
@@ -31,5 +32,7 @@ type Conf struct {
 		TemplateLocation    string `conf:"default:./ui/html"`
 		TemplateCache       map[string]*template.Template
 		InProduction        bool `conf:"default:false"`
+		Session             *sessions.Session
+		SessionSecret       string `conf:"default:PJpOoRZOdRtyCQJpGC0s3kV9qJTU01fcMSOYryEVPTHiqaqdwSlEYFF7nh59WZZ2EcVXOsGpJa"`
 	}
 }

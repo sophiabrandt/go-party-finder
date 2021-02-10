@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/golangcollege/sessions"
 	"github.com/jmoiron/sqlx"
 	"github.com/sophiabrandt/go-party-finder/internal/data/party"
 	"github.com/sophiabrandt/go-party-finder/internal/mid"
@@ -12,9 +13,9 @@ import (
 )
 
 // Router  creates a new http.Handler with all routes.
-func Router(build string, shutdown chan os.Signal, staticFilesDir string, log *log.Logger, db *sqlx.DB) http.Handler {
+func Router(build string, shutdown chan os.Signal, ses *sessions.Session, staticFilesDir string, log *log.Logger, db *sqlx.DB) http.Handler {
 	// Creates a new web application with all routes and middleware.
-	app := web.NewApp(shutdown, mid.Logger(log), mid.Errors(log), mid.Metrics(), mid.Panics(log))
+	app := web.NewApp(shutdown, mid.Logger(log), mid.Errors(log), mid.Metrics(), mid.Panics(log), mid.Session(ses))
 
 	// Register debug check endpoints.
 	cg := checkGroup{

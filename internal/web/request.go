@@ -9,8 +9,8 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-playground/form/v4"
-	"github.com/sophiabrandt/go-party-finder/internal/forms"
 	"github.com/sophiabrandt/go-party-finder/internal/data"
+	"github.com/sophiabrandt/go-party-finder/internal/forms"
 
 	en "github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"

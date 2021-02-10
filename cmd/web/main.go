@@ -15,6 +15,7 @@ import (
 	"github.com/sophiabrandt/go-party-finder/internal/config"
 	"github.com/sophiabrandt/go-party-finder/internal/database"
 	"github.com/sophiabrandt/go-party-finder/internal/handlers"
+	"github.com/sophiabrandt/go-party-finder/internal/session"
 	"github.com/sophiabrandt/go-party-finder/internal/web"
 )
 
@@ -121,6 +122,13 @@ func run(log *log.Logger) error {
 	cfg.App.TemplateCache = tc
 
 	// =========================================================================
+	// Sessions Support
+
+	session.NewSession(&cfg)
+	ses := session.New()
+	cfg.App.Session = ses
+
+	// =========================================================================
 	// Start Server
 
 	log.Println("main: Initializing server")
@@ -135,7 +143,7 @@ func run(log *log.Logger) error {
 
 	s := http.Server{
 		Addr:         cfg.Web.Addr,
-		Handler:      handlers.Router(build, shutdown, staticFilesDir, log, db),
+		Handler:      handlers.Router(build, shutdown, ses, staticFilesDir, log, db),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 		IdleTimeout:  cfg.Web.IdleTimeout,

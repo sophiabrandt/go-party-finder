@@ -5,7 +5,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// TranslateOverrides overrides individual default error messages 
+// TranslateOverrides overrides individual default error messages
 // from the validation package with more human-friendly messages.
 func TranslateOverride(validate *validator.Validate, trans ut.Translator) {
 	validate.RegisterTranslation("required_without", trans, func(ut ut.Translator) error {

@@ -10,6 +10,7 @@ require (
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
+	github.com/golangcollege/sessions v1.2.0
 	github.com/google/uuid v1.2.0
 	github.com/jmoiron/sqlx v1.3.1
 	github.com/lib/pq v1.2.0
