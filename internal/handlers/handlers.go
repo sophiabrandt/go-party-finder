@@ -29,11 +29,11 @@ func Router(build string, shutdown chan os.Signal, ses *sessions.Session, static
 	pg := partyGroup{
 		party: party.New(log, db),
 	}
-	app.Handle(http.MethodGet, "/", pg.query)
-	app.Handle(http.MethodGet, "/parties/{page}/{rows}", pg.query)
-	app.Handle(http.MethodGet, "/parties/{id}", pg.queryByID)
-	app.Handle(http.MethodGet, "/parties/create", pg.createForm)
-	app.Handle(http.MethodPost, "/parties/create", pg.create)
+	app.Handle(http.MethodGet, "/", pg.query, mid.Session(ses))
+	app.Handle(http.MethodGet, "/parties/{page}/{rows}", pg.query, mid.Session(ses))
+	app.Handle(http.MethodGet, "/parties/{id}", pg.queryByID, mid.Session(ses))
+	app.Handle(http.MethodGet, "/parties/create", pg.createForm, mid.Session(ses))
+	app.Handle(http.MethodPost, "/parties/create", pg.create, mid.Session(ses))
 
 	// static file server
 	filesDir := http.Dir(staticFilesDir)

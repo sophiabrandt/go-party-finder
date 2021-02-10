@@ -37,6 +37,12 @@ var registered = make(map[string]bool)
 // framework.
 type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request) error
 
+// ServeHTTP is a wrapper to make the Handler compliant with the http.Handler interface.
+func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	h(ctx, w, r)
+}
+
 // App is the entrypoint for the web application.
 type App struct {
 	mux      *chi.Mux

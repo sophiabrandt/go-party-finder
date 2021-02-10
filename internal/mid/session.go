@@ -14,12 +14,12 @@ func Session(ses *sessions.Session) web.Middleware {
 	m := func(handler web.Handler) web.Handler {
 		// Create the handler that will be attached in the middleware chain.
 		h := func(ctx context.Context, w http.ResponseWriter, r *http.Request) (err error) {
-			// How to enable this?
-			// cannot use handler (type web.Handler) as type http.Handler in argument to ses.Enable:
-			// web.Handler does not implement http.Handler (missing ServeHTTP method)
-			ses.Enable(handler)
+			// Construct http.Handler with ServeHTTP method for the session middleware.
+			s := func(w http.ResponseWriter, r *http.Request) {
+				handler.ServeHTTP(w, r)
+			}
+			ses.Enable(http.HandlerFunc(s))
 
-			// Call the next handler and set its return value in the err variable.
 			return handler(ctx, w, r)
 		}
 
