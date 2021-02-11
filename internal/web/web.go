@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
+	"github.com/sophiabrandt/go-party-finder/internal/config"
 )
 
 // ctxKey represents the type of value for the context key.
@@ -21,9 +22,10 @@ const KeyValues ctxKey = 1
 
 // Values represent state for each request.
 type Values struct {
-	TraceID    string
-	Now        time.Time
-	StatusCode int
+	TraceID      string
+	Now          time.Time
+	LocalContext *config.LocalContext
+	StatusCode   int
 }
 
 // registered keeps track of handlers registered to the http default server
@@ -47,16 +49,18 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 type App struct {
 	mux      *chi.Mux
 	shutdown chan os.Signal
+	lctx     *config.LocalContext
 	mw       []Middleware
 }
 
 // NewApp creates an App value that handles the routes for the application.
-func NewApp(shutdown chan os.Signal, mw ...Middleware) *App {
+func NewApp(shutdown chan os.Signal, lctx *config.LocalContext, mw ...Middleware) *App {
 	mux := chi.NewRouter()
 
 	return &App{
 		mux:      mux,
 		shutdown: shutdown,
+		lctx:     lctx,
 		mw:       mw,
 	}
 }
@@ -108,8 +112,9 @@ func (a *App) handle(debug bool, method string, path string, handler Handler, mw
 		// Set the context with the required values to
 		// process the request.
 		v := Values{
-			TraceID: uuid.NewString(),
-			Now:     time.Now(),
+			TraceID:      uuid.NewString(),
+			Now:          time.Now(),
+			LocalContext: a.lctx,
 		}
 		ctx = context.WithValue(ctx, KeyValues, &v)
 

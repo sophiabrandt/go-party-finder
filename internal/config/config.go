@@ -4,8 +4,8 @@ import (
 	"html/template"
 	"time"
 
-	"github.com/ardanlabs/conf"
 	"github.com/golangcollege/sessions"
+	"github.com/ardanlabs/conf"
 )
 
 // Conf holds all the app configuration.
@@ -31,8 +31,13 @@ type Conf struct {
 		StaticFilesLocation string `conf:"default:./ui/static"`
 		TemplateLocation    string `conf:"default:./ui/html"`
 		TemplateCache       map[string]*template.Template
-		InProduction        bool `conf:"default:false"`
-		Session             *sessions.Session
-		SessionSecret       string `conf:"default:PJpOoRZOdRtyCQJpGC0s3kV9qJTU01fcMSOYryEVPTHiqaqdwSlEYFF7nh59WZZ2EcVXOsGpJa"`
+		InProduction        bool   `conf:"default:false"`
+		SessionSecret       string `conf:"default:UzXRAAKMfSBWvV44HN25tRhfpKFMKT7a"`
 	}
+}
+
+// LocalContext holds local context, e.g., template cache, session manager.
+type LocalContext struct {
+	TemplateCache map[string]*template.Template
+	Session       *sessions.Session
 }

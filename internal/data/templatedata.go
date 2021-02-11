@@ -10,4 +10,5 @@ type TemplateData struct {
 	Parties     []*party.Info
 	CurrentYear int
 	Form        *forms.Form
+	Flash       string
 }

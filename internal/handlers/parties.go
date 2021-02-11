@@ -72,7 +72,8 @@ func (pg partyGroup) queryByID(ctx context.Context, w http.ResponseWriter, r *ht
 		}
 	}
 
-	return web.Respond(ctx, w, "party_detail.page.tmpl", &td.TemplateData{Party: prty}, http.StatusOK)
+	flash := v.LocalContext.Session.PopString(r, "flash")
+	return web.Respond(ctx, w, "party_detail.page.tmpl", &td.TemplateData{Party: prty, Flash: flash}, http.StatusOK)
 }
 
 // createForm shows the web form for creating a new party.
@@ -98,6 +99,7 @@ func (pg partyGroup) create(ctx context.Context, w http.ResponseWriter, r *http.
 		return errors.Wrapf(err, "creating new party: %+v", np)
 	}
 
+	v.LocalContext.Session.Put(r, "flash", "Party successfully created!")
 	http.Redirect(w, r, fmt.Sprintf("/parties/%v", prty.ID), http.StatusSeeOther)
 	return nil
 }

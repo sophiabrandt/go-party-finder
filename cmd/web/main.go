@@ -23,6 +23,7 @@ import (
 var (
 	build = "develop"
 	cfg   config.Conf
+	lctx  config.LocalContext
 )
 
 func main() {
@@ -125,8 +126,8 @@ func run(log *log.Logger) error {
 	// Sessions Support
 
 	session.NewSession(&cfg)
-	ses := session.New()
-	cfg.App.Session = ses
+	ses := session.NewStore()
+	lctx.Session = ses
 
 	// =========================================================================
 	// Start Server
@@ -143,7 +144,7 @@ func run(log *log.Logger) error {
 
 	s := http.Server{
 		Addr:         cfg.Web.Addr,
-		Handler:      handlers.Router(build, shutdown, ses, staticFilesDir, log, db),
+		Handler:      handlers.Router(build, shutdown, &lctx, staticFilesDir, log, db),
 		ReadTimeout:  cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 		IdleTimeout:  cfg.Web.IdleTimeout,

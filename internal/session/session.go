@@ -10,13 +10,13 @@ import (
 
 var conf *config.Conf
 
-// NewSession creates sets up the config for the session manager.
+// NewSession sets up the config for the session manager.
 func NewSession(c *config.Conf) {
 	conf = c
 }
 
-// New creates the session manager.
-func New() *sessions.Session {
+// NewStore creates the session manager.
+func NewStore() *sessions.Session {
 	session := sessions.New([]byte(conf.App.SessionSecret))
 	session.Lifetime = 12 * time.Hour
 	session.Persist = true
