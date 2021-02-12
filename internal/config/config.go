@@ -4,14 +4,13 @@ import (
 	"html/template"
 	"time"
 
-	"github.com/golangcollege/sessions"
 	"github.com/ardanlabs/conf"
 )
 
 // Conf holds all the app configuration.
 type Conf struct {
 	conf.Version
-	Web struct {
+	Server struct {
 		Addr            string        `conf:"default:0.0.0.0:8000"`
 		DebugAddr       string        `conf:"default:0.0.0.0:6060"`
 		ReadTimeout     time.Duration `conf:"default:5s"`
@@ -26,7 +25,7 @@ type Conf struct {
 		Name       string `conf:"default:postgres"`
 		DisableTLS bool   `conf:"default:true"`
 	}
-	App struct {
+	Web struct {
 		UseCache            bool   `conf:"default:false"`
 		StaticFilesLocation string `conf:"default:./ui/static"`
 		TemplateLocation    string `conf:"default:./ui/html"`
@@ -34,10 +33,4 @@ type Conf struct {
 		InProduction        bool   `conf:"default:false"`
 		SessionSecret       string `conf:"default:UzXRAAKMfSBWvV44HN25tRhfpKFMKT7a"`
 	}
-}
-
-// LocalContext holds local context, e.g., template cache, session manager.
-type LocalContext struct {
-	TemplateCache map[string]*template.Template
-	Session       *sessions.Session
 }

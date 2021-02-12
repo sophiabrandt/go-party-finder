@@ -77,9 +77,9 @@ func respondWithTemplate(ctx context.Context, w http.ResponseWriter, tmpl string
 	// setup template Cache
 	var tc map[string]*template.Template
 
-	if conf.App.UseCache {
+	if conf.Web.UseCache {
 		// get the template cache from the app config
-		tc = conf.App.TemplateCache
+		tc = conf.Web.TemplateCache
 	} else {
 		// this is just used for testing, so that we rebuild
 		// the cache on every request
@@ -135,7 +135,7 @@ func respondWithError(w http.ResponseWriter, data ErrorResponse, statusCode int)
 func CreateTemplateCache() (map[string]*template.Template, error) {
 	cache := map[string]*template.Template{}
 
-	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", conf.App.TemplateLocation))
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", conf.Web.TemplateLocation))
 	if err != nil {
 		return cache, err
 	}
@@ -148,12 +148,12 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 			return cache, err
 		}
 
-		ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", conf.App.TemplateLocation))
+		ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", conf.Web.TemplateLocation))
 		if err != nil {
 			return cache, err
 		}
 
-		ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.partial.tmpl", conf.App.TemplateLocation))
+		ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.partial.tmpl", conf.Web.TemplateLocation))
 		if err != nil {
 			return cache, err
 		}

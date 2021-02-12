@@ -12,6 +12,7 @@ import (
 
 	"github.com/ardanlabs/conf"
 	"github.com/pkg/errors"
+	"github.com/sophiabrandt/go-party-finder/internal/apc"
 	"github.com/sophiabrandt/go-party-finder/internal/config"
 	"github.com/sophiabrandt/go-party-finder/internal/database"
 	"github.com/sophiabrandt/go-party-finder/internal/handlers"
@@ -23,7 +24,6 @@ import (
 var (
 	build = "develop"
 	cfg   config.Conf
-	lctx  config.LocalContext
 )
 
 func main() {
@@ -93,8 +93,8 @@ func run(log *log.Logger) error {
 	log.Println("main: Initializing debugging support")
 
 	go func() {
-		log.Printf("main: Debug Listening %s", cfg.Web.DebugAddr)
-		if err := http.ListenAndServe(cfg.Web.DebugAddr, http.DefaultServeMux); err != nil {
+		log.Printf("main: Debug Listening %s", cfg.Server.DebugAddr)
+		if err := http.ListenAndServe(cfg.Server.DebugAddr, http.DefaultServeMux); err != nil {
 			log.Printf("main: Debug Listener closed : %v", err)
 		}
 	}()
@@ -120,14 +120,15 @@ func run(log *log.Logger) error {
 	if err != nil {
 		return errors.Wrap(err, "cannot create template cache")
 	}
-	cfg.App.TemplateCache = tc
+	cfg.Web.TemplateCache = tc
 
 	// =========================================================================
 	// Sessions Support
 
 	session.NewSession(&cfg)
 	ses := session.NewStore()
-	lctx.Session = ses
+
+	apc := apc.New(ses)
 
 	// =========================================================================
 	// Start Server
@@ -140,14 +141,14 @@ func run(log *log.Logger) error {
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
 
 	// pass location of static files to router
-	staticFilesDir := cfg.App.StaticFilesLocation
+	staticFilesDir := cfg.Web.StaticFilesLocation
 
 	s := http.Server{
-		Addr:         cfg.Web.Addr,
-		Handler:      handlers.Router(build, shutdown, &lctx, staticFilesDir, log, db),
-		ReadTimeout:  cfg.Web.ReadTimeout,
-		WriteTimeout: cfg.Web.WriteTimeout,
-		IdleTimeout:  cfg.Web.IdleTimeout,
+		Addr:         cfg.Server.Addr,
+		Handler:      handlers.Router(build, shutdown, apc, staticFilesDir, log, db),
+		ReadTimeout:  cfg.Server.ReadTimeout,
+		WriteTimeout: cfg.Server.WriteTimeout,
+		IdleTimeout:  cfg.Server.IdleTimeout,
 	}
 
 	// Make a channel to listen for errors coming from the listener. Use a
@@ -156,7 +157,7 @@ func run(log *log.Logger) error {
 
 	// Start the service listening for requests.
 	go func() {
-		log.Printf("main: API listening on %s", s.Addr)
+		log.Printf("main: APP listening on %s", s.Addr)
 		serverErrors <- s.ListenAndServe()
 	}()
 
@@ -172,7 +173,7 @@ func run(log *log.Logger) error {
 		log.Printf("main: %v : Start shutdown", sig)
 
 		// Give outstanding requests a deadline for completion.
-		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.Server.ShutdownTimeout)
 		defer cancel()
 
 		// Asking listener to shutdown and shed load.

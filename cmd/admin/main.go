@@ -45,7 +45,7 @@ func run(log *log.Logger) error {
 	cfg.Version.SVN = build
 	cfg.Version.Desc = "Apache 2.0 License"
 
-	const prefix = "MEETS"
+	const prefix = "PARTIES"
 	if err := conf.Parse(os.Args[1:], prefix, &cfg); err != nil {
 		switch err {
 		case conf.ErrHelpWanted:

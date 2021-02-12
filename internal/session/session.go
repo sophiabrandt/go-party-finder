@@ -17,10 +17,10 @@ func NewSession(c *config.Conf) {
 
 // NewStore creates the session manager.
 func NewStore() *sessions.Session {
-	session := sessions.New([]byte(conf.App.SessionSecret))
+	session := sessions.New([]byte(conf.Web.SessionSecret))
 	session.Lifetime = 12 * time.Hour
 	session.Persist = true
 	session.SameSite = http.SameSiteLaxMode
-	session.Secure = conf.App.InProduction
+	session.Secure = conf.Web.InProduction
 	return session
 }
