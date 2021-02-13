@@ -49,7 +49,7 @@ func (pg partyGroup) query(ctx context.Context, w http.ResponseWriter, r *http.R
 		return err
 	}
 
-	return web.Respond(ctx, w, "home.page.tmpl", &td.TemplateData{Parties: parties}, http.StatusOK)
+	return web.Respond(ctx, w, r, "home.page.tmpl", &td.TemplateData{Parties: parties}, http.StatusOK)
 }
 
 // querybyID shows the details page for a given party.
@@ -72,14 +72,13 @@ func (pg partyGroup) queryByID(ctx context.Context, w http.ResponseWriter, r *ht
 		}
 	}
 
-	flash := v.AppContext.Session.PopString(r, "flash")
-	return web.Respond(ctx, w, "party_detail.page.tmpl", &td.TemplateData{Party: prty, Flash: flash}, http.StatusOK)
+	return web.Respond(ctx, w, r, "party_detail.page.tmpl", &td.TemplateData{Party: prty}, http.StatusOK)
 }
 
 // createForm shows the web form for creating a new party.
 func (pg partyGroup) createForm(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	form := forms.New(nil)
-	return web.Respond(ctx, w, "create.page.tmpl", &td.TemplateData{Form: form}, http.StatusOK)
+	return web.Respond(ctx, w, r, "create.page.tmpl", &td.TemplateData{Form: form}, http.StatusOK)
 }
 
 // create parses form data and creates a new party.
@@ -91,7 +90,7 @@ func (pg partyGroup) create(ctx context.Context, w http.ResponseWriter, r *http.
 
 	var np party.NewParty
 	if form, err := web.DecodeForm(r, &np); err != nil {
-		return web.Respond(ctx, w, "create.page.tmpl", &td.TemplateData{Form: form}, http.StatusUnprocessableEntity)
+		return web.Respond(ctx, w, r, "create.page.tmpl", &td.TemplateData{Form: form}, http.StatusUnprocessableEntity)
 	}
 
 	prty, err := pg.party.Create(ctx, v.TraceID, np, v.Now)

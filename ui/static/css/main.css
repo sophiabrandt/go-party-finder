@@ -14,7 +14,7 @@
   --color-contrast: #e63946;
   --color-error: #c0392b;
   --color-flash: #fb8500;
-  --color-danger: #f44336;
+  --color-danger: #c5362b;
   --color-success: #8ad671;
 }
 
@@ -162,11 +162,16 @@ textarea {
   display: inline-block;
 }
 
+.flash__container {
+  min-width: 80vw;
+}
+
 .flash {
   color: var(--color-dark);
   font-weight: bold;
   text-align: center;
   padding: 1rem;
+  width: 100%;
   background-color: var(--color-flash);
 }
 
@@ -185,6 +190,10 @@ button {
   color: var(--color-neutral);
 }
 
+button:hover {
+  cursor: pointer;
+}
+
 button.success {
   background-color: var(--color-success);
 }
@@ -197,7 +206,8 @@ button.success {
 }
 
 button.danger--button {
-  background-color: red;
+  color: #f1faee;
+  background-color: var(--color-danger);
 }
 
 .footer {

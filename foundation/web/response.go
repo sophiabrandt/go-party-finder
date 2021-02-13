@@ -35,17 +35,19 @@ func HumanDate(t time.Time) string {
 }
 
 // addDefaultData adds data for all templates
-func addDefaultData(dt *td.TemplateData) *td.TemplateData {
+func addDefaultData(dt *td.TemplateData, ctx context.Context, r *http.Request) *td.TemplateData {
+	v, _ := ctx.Value(KeyValues).(*Values)
 	if dt == nil {
 		dt = &td.TemplateData{}
 	}
 	dt.CurrentYear = time.Now().Year()
+	dt.Flash = v.AppContext.Session.PopString(r, "flash")
 
 	return dt
 }
 
 // Respond renders templates using html/template.
-func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data interface{}, statusCode int) error {
+func Respond(ctx context.Context, w http.ResponseWriter, r *http.Request, tmpl string, data interface{}, statusCode int) error {
 	// add secure headers
 	w.Header().Set("X-XSS-Protection", "1; mode=block")
 	w.Header().Set("X-Frame-Options", "deny")
@@ -62,7 +64,7 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 
 	switch d := data.(type) {
 	case *td.TemplateData:
-		return respondWithTemplate(ctx, w, tmpl, d, statusCode)
+		return respondWithTemplate(ctx, w, r, tmpl, d, statusCode)
 	case ErrorResponse:
 		return respondWithError(w, d, statusCode)
 	default:
@@ -73,7 +75,7 @@ func Respond(ctx context.Context, w http.ResponseWriter, tmpl string, data inter
 }
 
 // respondWithTemplate assembles the HTML template and renders a response to the client.
-func respondWithTemplate(ctx context.Context, w http.ResponseWriter, tmpl string, data *td.TemplateData, statusCode int) error {
+func respondWithTemplate(ctx context.Context, w http.ResponseWriter, r *http.Request, tmpl string, data *td.TemplateData, statusCode int) error {
 	// setup template Cache
 	var tc map[string]*template.Template
 
@@ -98,7 +100,7 @@ func respondWithTemplate(ctx context.Context, w http.ResponseWriter, tmpl string
 
 	buf := new(bytes.Buffer)
 
-	err := t.Execute(buf, addDefaultData(data))
+	err := t.Execute(buf, addDefaultData(data, ctx, r))
 	if err != nil {
 		return errors.Wrap(err, "cannot parse template")
 	}
@@ -170,7 +172,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 }
 
 // RespondError sends an error response back to the client.
-func RespondError(ctx context.Context, w http.ResponseWriter, err error) error {
+func RespondError(ctx context.Context, w http.ResponseWriter, r *http.Request, err error) error {
 	// If the error was of the type *Error, the handler has
 	// a specific status code and error to return.
 	if webErr, ok := errors.Cause(err).(*Error); ok {
@@ -178,7 +180,7 @@ func RespondError(ctx context.Context, w http.ResponseWriter, err error) error {
 			Error:  webErr.Err.Error(),
 			Fields: webErr.Fields,
 		}
-		if err := Respond(ctx, w, "", er, webErr.Status); err != nil {
+		if err := Respond(ctx, w, r, "", er, webErr.Status); err != nil {
 			return err
 		}
 		return nil
@@ -188,7 +190,7 @@ func RespondError(ctx context.Context, w http.ResponseWriter, err error) error {
 	er := ErrorResponse{
 		Error: http.StatusText(http.StatusInternalServerError),
 	}
-	if err := Respond(ctx, w, "", er, http.StatusInternalServerError); err != nil {
+	if err := Respond(ctx, w, r, "", er, http.StatusInternalServerError); err != nil {
 		return err
 	}
 

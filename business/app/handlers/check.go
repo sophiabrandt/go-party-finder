@@ -34,7 +34,7 @@ func (cg checkGroup) readiness(ctx context.Context, w http.ResponseWriter, r *ht
 		Status: status,
 	}
 
-	return web.Respond(ctx, w, "", health, statusCode)
+	return web.Respond(ctx, w, r, "", health, statusCode)
 }
 
 // liveness returns simple status info if the service is alive.
@@ -54,5 +54,5 @@ func (cg checkGroup) liveness(ctx context.Context, w http.ResponseWriter, r *htt
 		Host:   host,
 	}
 
-	return web.Respond(ctx, w, "", info, http.StatusOK)
+	return web.Respond(ctx, w, r, "", info, http.StatusOK)
 }
