@@ -113,22 +113,19 @@ func run(log *log.Logger) error {
 	log.Printf("main: config :\n%v\n", out)
 
 	// =========================================================================
-	// Create TemplateCache
+	// TemplateCache, Sessions
 
 	web.NewTemplates(&cfg)
 	tc, err := web.CreateTemplateCache()
 	if err != nil {
 		return errors.Wrap(err, "cannot create template cache")
 	}
-	cfg.Web.TemplateCache = tc
-
-	// =========================================================================
-	// Sessions Support
 
 	session.NewSession(&cfg)
 	ses := session.NewStore()
 
-	apc := apc.New(ses)
+	// put session store and template cache on app context
+	apc := apc.New(ses, tc)
 
 	// =========================================================================
 	// Start Server

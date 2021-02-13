@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/sophiabrandt/go-party-finder/config"
 	td "github.com/sophiabrandt/go-party-finder/business/data"
+	"github.com/sophiabrandt/go-party-finder/config"
 )
 
 var (
@@ -77,9 +77,14 @@ func respondWithTemplate(ctx context.Context, w http.ResponseWriter, tmpl string
 	// setup template Cache
 	var tc map[string]*template.Template
 
+	v, ok := ctx.Value(KeyValues).(*Values)
+	if !ok {
+		return NewShutdownError("web value missing from context")
+	}
+
 	if conf.Web.UseCache {
 		// get the template cache from the app config
-		tc = conf.Web.TemplateCache
+		tc = v.AppContext.TemplateCache
 	} else {
 		// this is just used for testing, so that we rebuild
 		// the cache on every request

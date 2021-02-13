@@ -1,7 +1,6 @@
 package config
 
 import (
-	"html/template"
 	"time"
 
 	"github.com/ardanlabs/conf"
@@ -29,7 +28,6 @@ type Conf struct {
 		UseCache            bool   `conf:"default:false"`
 		StaticFilesLocation string `conf:"default:./ui/static"`
 		TemplateLocation    string `conf:"default:./ui/html"`
-		TemplateCache       map[string]*template.Template
 		InProduction        bool   `conf:"default:false"`
 		SessionSecret       string `conf:"default:UzXRAAKMfSBWvV44HN25tRhfpKFMKT7a"`
 	}

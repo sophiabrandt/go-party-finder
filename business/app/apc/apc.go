@@ -1,9 +1,8 @@
 package apc
 
 import (
-	"html/template"
-
 	"github.com/golangcollege/sessions"
+	"html/template"
 )
 
 // AppContext holds the local app context for the application.
@@ -13,9 +12,9 @@ type AppContext struct {
 }
 
 // New creates a new Apc struct.
-func New(session *sessions.Session) *AppContext {
+func New(session *sessions.Session, tc map[string]*template.Template) *AppContext {
 	return &AppContext{
 		Session:       session,
-		TemplateCache: nil,
+		TemplateCache: tc,
 	}
 }
