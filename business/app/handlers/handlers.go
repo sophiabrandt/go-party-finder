@@ -15,7 +15,7 @@ import (
 // Router  creates a new http.Handler with all routes.
 func Router(build string, shutdown chan os.Signal, apc *apc.AppContext, staticFilesDir string, log *log.Logger, db *sqlx.DB) http.Handler {
 	// Creates a new web application with all routes and middleware.
-	app := web.NewApp(shutdown, apc, mid.Logger(log), mid.Errors(log), mid.Metrics(), mid.Panics(log), mid.Session(apc.Session))
+	app := web.NewApp(shutdown, apc, mid.Logger(log), mid.Errors(log), mid.Metrics(), mid.Panics(log))
 
 	// Register debug check endpoints.
 	cg := checkGroup{
@@ -29,15 +29,17 @@ func Router(build string, shutdown chan os.Signal, apc *apc.AppContext, staticFi
 	pg := partyGroup{
 		party: party.New(log, db),
 	}
-	app.Handle(http.MethodGet, "/", pg.query, mid.Session(apc.Session))
-	app.Handle(http.MethodGet, "/parties/{page}/{rows}", pg.query, mid.Session(apc.Session))
-	app.Handle(http.MethodGet, "/parties/{id}", pg.queryByID, mid.Session(apc.Session))
-	app.Handle(http.MethodGet, "/parties/create", pg.createForm, mid.Session(apc.Session))
-	app.Handle(http.MethodPost, "/parties/create", pg.create, mid.Session(apc.Session))
+	app.Handle(http.MethodGet, "/", pg.query)
+	app.Handle(http.MethodGet, "/parties/{page}/{rows}", pg.query)
+	app.Handle(http.MethodGet, "/parties/{id}", pg.queryByID)
+	app.Handle(http.MethodGet, "/parties/create", pg.createForm)
+	app.Handle(http.MethodPost, "/parties/create", pg.create)
 
 	// static file server
 	filesDir := http.Dir(staticFilesDir)
 	app.FileServer("/static", web.NeuteredFileSystem{filesDir})
 
-	return app
+	// TODO: find a better way to add middleware with http.Handler signature to
+	// individual routes
+	return apc.Session.Enable(app)
 }
