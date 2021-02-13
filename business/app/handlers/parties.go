@@ -7,9 +7,9 @@ import (
 	"strconv"
 
 	"github.com/pkg/errors"
+	"github.com/sophiabrandt/go-party-finder/foundation/web/forms"
 	td "github.com/sophiabrandt/go-party-finder/business/data"
 	"github.com/sophiabrandt/go-party-finder/business/data/party"
-	"github.com/sophiabrandt/go-party-finder/business/app/forms"
 	"github.com/sophiabrandt/go-party-finder/foundation/web"
 )
 

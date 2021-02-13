@@ -1,8 +1,9 @@
 package apc
 
 import (
-	"github.com/golangcollege/sessions"
 	"html/template"
+
+	"github.com/golangcollege/sessions"
 )
 
 // AppContext holds the local app context for the application.
