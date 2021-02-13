@@ -5,14 +5,27 @@
   --s-1: calc(var(--s0) / var(--ratio));
   --s0: 1rem;
   --measure: 60ch;
+  --color-background: #fdfffc;
   --color-dark: #1d3557;
   --color-light: #f1faee;
+  --color-neutral: #6c757d;
   --color-secondary: #a8dadc;
   --color-tertiary: #457b9d;
   --color-contrast: #e63946;
   --color-error: #c0392b;
+  --color-flash: #fb8500;
   --color-danger: #f44336;
   --color-success: #8ad671;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #0a131f;
+    --color-light: #1d3557;
+    --color-dark: #f1faee;
+    --color-tertiary: #a8dadc;
+    --color-secondary: #457b9d;
+  }
 }
 
 :focus {
@@ -30,6 +43,7 @@ body {
 }
 
 body {
+  background-color: var(--color-background);
   display: flex;
   flex-direction: column;
 }
@@ -42,6 +56,12 @@ a {
 a:hover {
   color: var(--color-contrast);
   text-decoration: underline;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--color-dark);
 }
 
 .header__content {
@@ -142,6 +162,14 @@ textarea {
   display: inline-block;
 }
 
+.flash {
+  color: var(--color-dark);
+  font-weight: bold;
+  text-align: center;
+  padding: 1rem;
+  background-color: var(--color-flash);
+}
+
 .error {
   color: var(--color-error);
   font-weight: bold;
@@ -153,8 +181,8 @@ button {
   border: 1px solid var(--color-dark);
   border-radius: 3px;
   background-color: #efefef;
-  color: var(--color-dark);
   padding: 0.3rem;
+  color: var(--color-neutral);
 }
 
 button.success {
