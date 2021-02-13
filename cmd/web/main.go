@@ -12,12 +12,12 @@ import (
 
 	"github.com/ardanlabs/conf"
 	"github.com/pkg/errors"
-	"github.com/sophiabrandt/go-party-finder/internal/apc"
-	"github.com/sophiabrandt/go-party-finder/internal/config"
-	"github.com/sophiabrandt/go-party-finder/internal/database"
-	"github.com/sophiabrandt/go-party-finder/internal/handlers"
-	"github.com/sophiabrandt/go-party-finder/internal/session"
-	"github.com/sophiabrandt/go-party-finder/internal/web"
+	"github.com/sophiabrandt/go-party-finder/business/app/apc"
+	"github.com/sophiabrandt/go-party-finder/business/app/handlers"
+	"github.com/sophiabrandt/go-party-finder/business/app/session"
+	"github.com/sophiabrandt/go-party-finder/config"
+	"github.com/sophiabrandt/go-party-finder/foundation/database"
+	"github.com/sophiabrandt/go-party-finder/foundation/web"
 )
 
 // build is the git version of this program. It is set using build flags in the makefile.

@@ -6,10 +6,10 @@ import (
 	"os"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/sophiabrandt/go-party-finder/internal/apc"
-	"github.com/sophiabrandt/go-party-finder/internal/data/party"
-	"github.com/sophiabrandt/go-party-finder/internal/mid"
-	"github.com/sophiabrandt/go-party-finder/internal/web"
+	"github.com/sophiabrandt/go-party-finder/business/app/apc"
+	"github.com/sophiabrandt/go-party-finder/business/data/party"
+	"github.com/sophiabrandt/go-party-finder/business/mid"
+	"github.com/sophiabrandt/go-party-finder/foundation/web"
 )
 
 // Router  creates a new http.Handler with all routes.

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/sophiabrandt/go-party-finder/internal/web"
+	"github.com/sophiabrandt/go-party-finder/foundation/web"
 )
 
 // Logger writes some information about the request to the logs

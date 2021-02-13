@@ -11,7 +11,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
-	"github.com/sophiabrandt/go-party-finder/internal/apc"
+	"github.com/sophiabrandt/go-party-finder/business/app/apc"
 )
 
 // ctxKey represents the type of value for the context key.

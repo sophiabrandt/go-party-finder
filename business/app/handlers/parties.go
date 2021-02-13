@@ -7,10 +7,10 @@ import (
 	"strconv"
 
 	"github.com/pkg/errors"
-	td "github.com/sophiabrandt/go-party-finder/internal/data"
-	"github.com/sophiabrandt/go-party-finder/internal/data/party"
-	"github.com/sophiabrandt/go-party-finder/internal/forms"
-	"github.com/sophiabrandt/go-party-finder/internal/web"
+	td "github.com/sophiabrandt/go-party-finder/business/data"
+	"github.com/sophiabrandt/go-party-finder/business/data/party"
+	"github.com/sophiabrandt/go-party-finder/business/app/forms"
+	"github.com/sophiabrandt/go-party-finder/foundation/web"
 )
 
 type partyGroup struct {

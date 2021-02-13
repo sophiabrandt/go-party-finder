@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/sophiabrandt/go-party-finder/internal/database"
-	"github.com/sophiabrandt/go-party-finder/internal/web"
+	"github.com/sophiabrandt/go-party-finder/foundation/database"
+	"github.com/sophiabrandt/go-party-finder/foundation/web"
 
 	"github.com/jmoiron/sqlx"
 )

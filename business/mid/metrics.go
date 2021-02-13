@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/sophiabrandt/go-party-finder/internal/web"
+	"github.com/sophiabrandt/go-party-finder/foundation/web"
 )
 
 // m contains the global program counters for the application.

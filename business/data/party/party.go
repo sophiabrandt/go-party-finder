@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
-	"github.com/sophiabrandt/go-party-finder/internal/database"
+	"github.com/sophiabrandt/go-party-finder/foundation/database"
 )
 
 var (

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/golangcollege/sessions"
-	"github.com/sophiabrandt/go-party-finder/internal/config"
+	"github.com/sophiabrandt/go-party-finder/config"
 )
 
 var conf *config.Conf

@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/golangcollege/sessions"
-	"github.com/sophiabrandt/go-party-finder/internal/web"
+	"github.com/sophiabrandt/go-party-finder/foundation/web"
 )
 
 // Session adds middleware to load and save sessions.

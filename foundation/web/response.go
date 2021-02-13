@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/sophiabrandt/go-party-finder/internal/config"
-	td "github.com/sophiabrandt/go-party-finder/internal/data"
+	"github.com/sophiabrandt/go-party-finder/config"
+	td "github.com/sophiabrandt/go-party-finder/business/data"
 )
 
 var (

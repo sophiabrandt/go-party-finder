@@ -1,8 +1,8 @@
 package data
 
 import (
-	"github.com/sophiabrandt/go-party-finder/internal/data/party"
-	"github.com/sophiabrandt/go-party-finder/internal/forms"
+	"github.com/sophiabrandt/go-party-finder/business/data/party"
+	"github.com/sophiabrandt/go-party-finder/business/app/forms"
 )
 
 type TemplateData struct {

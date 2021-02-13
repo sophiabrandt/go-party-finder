@@ -7,7 +7,7 @@ import (
 	"runtime/debug"
 
 	"github.com/pkg/errors"
-	"github.com/sophiabrandt/go-party-finder/internal/web"
+	"github.com/sophiabrandt/go-party-finder/foundation/web"
 )
 
 // Panics recovers from panics and converts the panic to an error so it is

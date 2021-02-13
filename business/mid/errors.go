@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/sophiabrandt/go-party-finder/internal/web"
+	"github.com/sophiabrandt/go-party-finder/foundation/web"
 )
 
 // Errors handles errors coming out of the call chain. It detects normal
