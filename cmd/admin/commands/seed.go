@@ -5,8 +5,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/sophiabrandt/go-party-finder/internal/data/schema"
-	"github.com/sophiabrandt/go-party-finder/internal/database"
+	"github.com/sophiabrandt/go-party-finder/business/data/schema"
+	"github.com/sophiabrandt/go-party-finder/foundation/database"
 )
 
 // Seed loads test data into the database.
