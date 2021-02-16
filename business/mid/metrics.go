@@ -30,11 +30,11 @@ func Metrics() web.Middleware {
 			// Don't count anything on /debug routes towards metrics.
 			// Call the next handler to continue processing.
 			if strings.HasPrefix(r.URL.Path, "/debug") {
-				return handler(ctx, w, r)
+				return handler.H(ctx, w, r)
 			}
 
 			// Call the next handler.
-			err := handler(ctx, w, r)
+			err := handler.H(ctx, w, r)
 
 			// Increment the request counter.
 			m.req.Add(1)
@@ -53,7 +53,7 @@ func Metrics() web.Middleware {
 			return err
 		}
 
-		return h
+		return web.Handler{h}
 	}
 
 	return m

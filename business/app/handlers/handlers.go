@@ -12,7 +12,7 @@ import (
 	"github.com/sophiabrandt/go-party-finder/foundation/web"
 )
 
-// Router  creates a new http.Handler with all routes.
+// Router creates a new http.Handler with all routes.
 func Router(build string, shutdown chan os.Signal, apc *apc.AppContext, staticFilesDir string, log *log.Logger, db *sqlx.DB) http.Handler {
 	// Creates a new web application with all routes and middleware.
 	app := web.NewApp(shutdown, apc, mid.Logger(log), mid.Errors(log), mid.Metrics(), mid.Panics(log))
@@ -22,18 +22,18 @@ func Router(build string, shutdown chan os.Signal, apc *apc.AppContext, staticFi
 		build: build,
 		db:    db,
 	}
-	app.HandleDebug(http.MethodGet, "/readiness", cg.readiness)
-	app.HandleDebug(http.MethodGet, "/liveness", cg.liveness)
+	app.HandleDebug(http.MethodGet, "/readiness", web.Handler{cg.readiness})
+	app.HandleDebug(http.MethodGet, "/liveness", web.Handler{cg.liveness})
 
 	// index route and parties routes
 	pg := partyGroup{
 		party: party.New(log, db),
 	}
-	app.Handle(http.MethodGet, "/", pg.query)
-	app.Handle(http.MethodGet, "/parties/{page}/{rows}", pg.query)
-	app.Handle(http.MethodGet, "/parties/{id}", pg.queryByID)
-	app.Handle(http.MethodGet, "/parties/create", pg.createForm)
-	app.Handle(http.MethodPost, "/parties/create", pg.create)
+	app.Handle(http.MethodGet, "/", web.Handler{pg.query})
+	app.Handle(http.MethodGet, "/parties/{page}/{rows}", web.Handler{pg.query})
+	app.Handle(http.MethodGet, "/parties/{id}", web.Handler{pg.queryByID})
+	app.Handle(http.MethodGet, "/parties/create", web.Handler{pg.createForm})
+	app.Handle(http.MethodPost, "/parties/create", web.Handler{pg.create})
 
 	// static file server
 	filesDir := http.Dir(staticFilesDir)

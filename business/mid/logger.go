@@ -28,7 +28,7 @@ func Logger(log *log.Logger) web.Middleware {
 			)
 
 			// Call the next handler.
-			err := handler(ctx, w, r)
+			err := handler.H(ctx, w, r)
 
 			log.Printf("%s: completed: %s %s -> %s (%d) (%s)",
 				v.TraceID,
@@ -39,7 +39,7 @@ func Logger(log *log.Logger) web.Middleware {
 			// Return the error so it can be handled further up the chain.
 			return err
 		}
-		return h
+		return web.Handler{h}
 	}
 	return m
 }

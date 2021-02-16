@@ -35,14 +35,22 @@ type Values struct {
 // could try to be registered more than once, causing a panic.
 var registered = make(map[string]bool)
 
-// A Handler is a type that handles an http request within our own little mini
+// A HandlerFunc is a function that handles an http request within our own little mini
 // framework.
-type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request) error
+type HandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request) error
+
+// Handler is the custom web handler for the application.
+type Handler struct {
+	H HandlerFunc
+}
 
 // ServeHTTP is a wrapper to make the Handler compliant with the http.Handler interface.
 func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	h(ctx, w, r)
+	err := h.H(ctx, w, r)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // App is the entrypoint for the web application.
@@ -119,7 +127,7 @@ func (a *App) handle(debug bool, method string, path string, handler Handler, mw
 		ctx = context.WithValue(ctx, KeyValues, &v)
 
 		// Call the wrapped handler functions.
-		if err := handler(ctx, w, r); err != nil {
+		if err := handler.H(ctx, w, r); err != nil {
 			a.SignalShutdown()
 			return
 		}
@@ -139,7 +147,7 @@ func (a *App) handle(debug bool, method string, path string, handler Handler, mw
 		return
 	}
 
-	a.mux.MethodFunc(method, path, h)
+	a.mux.Method(method, path, http.HandlerFunc(h))
 }
 
 // neuteredFileSystem disallows directory listings for a static file server.
