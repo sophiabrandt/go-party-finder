@@ -29,6 +29,10 @@ type Conf struct {
 		StaticFilesLocation string `conf:"default:./ui/static"`
 		TemplateLocation    string `conf:"default:./ui/html"`
 		InProduction        bool   `conf:"default:false"`
-		SessionSecret       string `conf:"default:UzXRAAKMfSBWvV44HN25tRhfpKFMKT7a"`
+	}
+	Session struct {
+		LifeTime time.Duration `conf:"default:12h"`
+		Persist  bool          `conf:"default:true"`
+		Secret   string        `conf:"u46IpCV9y5Vlur8YvODJEhgOY8m9JVE4"`
 	}
 }

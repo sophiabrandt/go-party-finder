@@ -8,8 +8,8 @@ import (
 	"github.com/ardanlabs/conf"
 	"github.com/pkg/errors"
 
-	"github.com/sophiabrandt/go-party-finder/foundation/database"
 	"github.com/sophiabrandt/go-party-finder/cmd/admin/commands"
+	"github.com/sophiabrandt/go-party-finder/foundation/database"
 )
 
 // build is the git version of this program. It is set using build flags in the makefile.

@@ -39,7 +39,5 @@ func Router(build string, shutdown chan os.Signal, apc *apc.AppContext, staticFi
 	filesDir := http.Dir(staticFilesDir)
 	app.FileServer("/static", web.NeuteredFileSystem{filesDir})
 
-	// TODO: find a better way to add middleware with http.Handler signature to
-	// individual routes
-	return apc.Session.Enable(app)
+	return app
 }

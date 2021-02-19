@@ -10,11 +10,12 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/golangcollege/sessions"
+
 	"github.com/ardanlabs/conf"
 	"github.com/pkg/errors"
 	"github.com/sophiabrandt/go-party-finder/business/app/apc"
 	"github.com/sophiabrandt/go-party-finder/business/app/handlers"
-	"github.com/sophiabrandt/go-party-finder/business/app/session"
 	"github.com/sophiabrandt/go-party-finder/config"
 	"github.com/sophiabrandt/go-party-finder/foundation/database"
 	"github.com/sophiabrandt/go-party-finder/foundation/web"
@@ -121,8 +122,12 @@ func run(log *log.Logger) error {
 		return errors.Wrap(err, "cannot create template cache")
 	}
 
-	session.NewSession(&cfg)
-	ses := session.NewStore()
+	// create new Session store
+	ses := sessions.New([]byte(cfg.Session.Secret))
+	ses.Lifetime = cfg.Session.LifeTime
+	ses.Persist = cfg.Session.Persist
+	ses.Secure = cfg.Web.InProduction
+	ses.SameSite = http.SameSiteLaxMode
 
 	// put session store and template cache on app context
 	apc := apc.New(ses, tc)

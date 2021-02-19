@@ -35,7 +35,7 @@ func HumanDate(t time.Time) string {
 }
 
 // addDefaultData adds data for all templates
-func addDefaultData(dt *td.TemplateData, ctx context.Context, r *http.Request) *td.TemplateData {
+func addDefaultData(ctx context.Context, r *http.Request, dt *td.TemplateData) *td.TemplateData {
 	v, _ := ctx.Value(KeyValues).(*Values)
 	if dt == nil {
 		dt = &td.TemplateData{}
@@ -100,7 +100,7 @@ func respondWithTemplate(ctx context.Context, w http.ResponseWriter, r *http.Req
 
 	buf := new(bytes.Buffer)
 
-	err := t.Execute(buf, addDefaultData(data, ctx, r))
+	err := t.Execute(buf, addDefaultData(ctx, r, data))
 	if err != nil {
 		return errors.Wrap(err, "cannot parse template")
 	}

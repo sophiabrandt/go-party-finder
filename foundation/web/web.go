@@ -48,6 +48,7 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // App is the entrypoint for the web application.
 type App struct {
 	mux      *chi.Mux
+	sesMux   http.Handler
 	shutdown chan os.Signal
 	apc      *apc.AppContext
 	mw       []Middleware
@@ -59,6 +60,7 @@ func NewApp(shutdown chan os.Signal, apc *apc.AppContext, mw ...Middleware) *App
 
 	return &App{
 		mux:      mux,
+		sesMux:   apc.Session.Enable(mux),
 		shutdown: shutdown,
 		apc:      apc,
 		mw:       mw,
@@ -73,7 +75,7 @@ func (a *App) SignalShutdown() {
 
 // ServeHTTP implements the http.Handler interface.
 func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	a.mux.ServeHTTP(w, r)
+	a.sesMux.ServeHTTP(w, r)
 }
 
 // HandleDebug sets a handler function for a given HTTP method and path pair
